@@ -134,19 +134,23 @@ do-build:
 	${FIND} ${BUILD_WRKSRC}/builds/${PORTNAME} -type d | ${XARGS} ${CHMOD} +w
 	${RM} ${BUILD_WRKSRC}/builds/${PORTNAME}/build.log.bz2 \
 		${BUILD_WRKSRC}/builds/${PORTNAME}/lib/charset.alias
-
-	@${STRIP_CMD} \
-		${BUILD_WRKSRC}/builds/${PORTNAME}/lib/libcc1.so.0.0.0 \
-		${BUILD_WRKSRC}/builds/${PORTNAME}/lib/gcc/${PORTNAME}/8.4.0/plugin/libcc1plugin.so.0.0.0 \
-		${BUILD_WRKSRC}/builds/${PORTNAME}/libexec/gcc/${PORTNAME}/8.4.0/plugin/gengtype
 	${FIND} ${BUILD_WRKSRC}/builds/${PORTNAME} -type d | ${XARGS} ${CHMOD} -w
 
 do-install:
-	# do NOT install ct-ng and its files. we just need binaries for the
-	# PORTNAME, not ct-ng
-	cd ${BUILD_WRKSRC}/builds/${PORTNAME} && \
-		${RM} bin/ct-ng libexec share
 	cd ${BUILD_WRKSRC}/builds && \
 		${COPYTREE_BIN} ${PORTNAME} ${STAGEDIR}${PREFIX}
+	# do NOT install ct-ng and its files. we just need binaries for the
+	# PORTNAME, not ct-ng
+	cd ${STAGEDIR}${PREFIX} && \
+		${RM} -rf bin/ct-ng \
+			libexec/crosstool-ng \
+			share/crosstool-ng \
+			share/doc/crosstool-ng \
+			share/man/man1/ct-ng.1.gz \
+			share/bash-completion
+	@${STRIP_CMD} \
+		${STAGEDIR}${PREFIX}/${PORTNAME}/lib/libcc1.so.0.0.0 \
+		${STAGEDIR}${PREFIX}/${PORTNAME}/lib/gcc/${PORTNAME}/8.4.0/plugin/libcp1plugin.so.0.0.0 \
+		${STAGEDIR}${PREFIX}/${PORTNAME}/libexec/gcc/${PORTNAME}/8.4.0/plugin/gengtype
 
 .include <bsd.port.mk>
